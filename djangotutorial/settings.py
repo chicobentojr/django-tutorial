@@ -11,6 +11,10 @@ https://docs.djangoproject.com/en/1.9/ref/settings/
 """
 
 import os
+import dj_database_url
+
+# Set the environment
+ENV = os.environ.get('ENV','Development')
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -22,9 +26,15 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = '1u^gu=x3@^%xtixg%1v7al88nn54acjhh(&^_v-+ejw&x1ex2z'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+if ENV == 'Production':
+    DEBUG = False
+else:
+    DEBUG = True
 
-ALLOWED_HOSTS = []
+if ENV == 'Production':
+    ALLOWED_HOSTS = ['tutorial-django.herokuapp.com']
+else:
+    ALLOWED_HOSTS = []
 
 # Application definition
 
@@ -79,6 +89,12 @@ DATABASES = {
     }
 }
 
+# Update database configuration with $DATABASE_URL.
+if ENV == 'Production':
+    db_from_env = dj_database_url.config(conn_max_age=500)
+    DATABASES['default'].update(db_from_env)
+
+
 # Password validation
 # https://docs.djangoproject.com/en/1.9/ref/settings/#auth-password-validators
 
@@ -114,4 +130,17 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.9/howto/static-files/
 
 STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+#STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+
+if ENV == 'Production':
+    PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
+    STATIC_ROOT = os.path.join(PROJECT_ROOT, 'staticfiles')
+    # Extra places for collectstatic to find static files.
+    STATICFILES_DIRS = (
+       os.path.join(PROJECT_ROOT, 'static'),
+    )
+
+# Simplified static file serving.
+# https://warehouse.python.org/project/whitenoise/
+if ENV == 'Production':
+    STATICFILES_STORAGE = 'whitenoise.django.GzipManifestStaticFilesStorage'
