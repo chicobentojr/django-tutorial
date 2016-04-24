@@ -27,7 +27,7 @@ SECRET_KEY = '1u^gu=x3@^%xtixg%1v7al88nn54acjhh(&^_v-+ejw&x1ex2z'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 if ENV == 'Production':
-    DEBUG = False
+    DEBUG = True
 else:
     DEBUG = True
 
